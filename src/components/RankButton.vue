@@ -1,25 +1,27 @@
 <script setup>
-  import { ref } from "vue";
-
   const emit = defineEmits(['selected-rank']);
-  const active = ref(false);
 
   const { rank } = defineProps({
     rank: {
       type: String,
       required: true
-    }
+    },
   })
 
-  const toggleSelected = () => {
-    active.value = !active.value;
-    emit('selected-rank', rank);
+  const toggleSelected = (buttonRef) => {
+    if(buttonRef.classList.contains('selected')){
+      buttonRef.classList.remove('selected');
+      emit('selected-rank', '');
+    } else {
+      buttonRef.classList.add('selected');
+      emit('selected-rank', rank, buttonRef);
+    }
   }
 </script>
 
 <template>
-  <div class="rank__button" :class="{ active }">
-    <button type="button" @click="toggleSelected">{{ rank }}</button>
+  <div class="rank__button">
+    <button type="button" @click="toggleSelected($event.target)">{{ rank }}</button>
   </div>
 </template>
 
@@ -28,6 +30,17 @@
     min-width: 100px;
     width: fit-content;
     height: 50px;
+  }
+
+  .rank__button button.selected {
+    background-color: var(--color-bg-rank-button-hover);
+    color: var(--color-rank-button-selected);
+    border-color: var(--color-bg-rank-button-hover);
+  }
+
+  .rank__button button.selected:hover {
+    background-color: var(--color-bg-rank-button-hover);
+    border-color: var(--color-bg-rank-button-hover);
   }
 
   .rank__button button {

@@ -4,6 +4,7 @@
   import { computed, ref } from "vue";
 
   const selectedRank = ref("");
+  const selectedButton = ref(null);
 
   const getSubRanks = computed(() => {
     for(const key in VALORANT_RANKS){
@@ -14,9 +15,14 @@
     return [];
   })
 
-  const handleSelectedRank = (rank) => {
+  const handleSelectedRank = (rank, buttonRef) => {
+    // conditionally remove selected class from button, so that only one button can be selected at a time
+    if (selectedButton.value) {
+      selectedButton.value.classList.remove("selected");
+    }
     selectedRank.value = rank;
-  }
+    selectedButton.value = buttonRef;
+  };
 
 </script>
 
@@ -31,15 +37,12 @@
       <img src="./assets/valo_video.png" alt="test">
     </div>
     <div class="rank__buttons">
-      <RankButton rank="iron" @selected-rank="handleSelectedRank"/>
-      <RankButton rank="bronze" @selected-rank="handleSelectedRank"/>
-      <RankButton rank="silver" @selected-rank="handleSelectedRank"/>
-      <RankButton rank="gold" @selected-rank="handleSelectedRank"/>
-      <RankButton rank="platinum" @selected-rank="handleSelectedRank"/>
-      <RankButton rank="diamond" @selected-rank="handleSelectedRank"/>
-      <RankButton rank="ascendant" @selected-rank="handleSelectedRank"/>
-      <RankButton rank="immortal" @selected-rank="handleSelectedRank"/>
-      <RankButton rank="radiant" @selected-rank="handleSelectedRank"/>
+      <RankButton
+          v-for="rank in Object.keys(VALORANT_RANKS)"
+          :key="rank"
+          :rank="rank"
+          @selected-rank="handleSelectedRank"
+      />
     </div>
     <TransitionGroup name="list" tag="ul" class="subranks__list">
       <li v-for="subRank in getSubRanks" :key="subRank" class="subrank__item">
