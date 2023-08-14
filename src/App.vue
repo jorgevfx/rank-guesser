@@ -2,7 +2,9 @@
   import VALORANT_RANKS from "@/utils/constants";
   import RankButton from "@/components/RankButton.vue";
   import { computed, ref } from "vue";
+  import ResultsModal from "@/components/ResultsModal.vue";
 
+  const showModal = ref(false);
   const selectedRank = ref("");
   const selectedButton = ref(null);
 
@@ -14,6 +16,10 @@
     }
     return [];
   })
+
+  const toggleModal = () => {
+    showModal.value = !showModal.value;
+  };
 
   const handleSelectedRank = (rank, buttonRef) => {
     // conditionally remove selected class from button, so that only one button can be selected at a time
@@ -27,6 +33,9 @@
 </script>
 
 <template>
+  <teleport to=".modals">
+    <ResultsModal v-if="showModal" />
+  </teleport>
   <header>
     <div class="logo">
       <img src="/logo.png" alt="logo">
@@ -46,7 +55,7 @@
     </div>
     <TransitionGroup name="list" tag="ul" class="subranks__list">
       <li v-for="subRank in getSubRanks" :key="subRank" class="subrank__item">
-        <img :src="`/ranks/${subRank}.png`" :alt="subRank">
+        <img :src="`/ranks/${subRank}.png`" :alt="subRank" @click="toggleModal">
       </li>
     </TransitionGroup>
   </main>
