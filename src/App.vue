@@ -34,7 +34,7 @@
 
 <template>
   <teleport to=".modals">
-    <ResultsModal v-if="showModal" />
+    <ResultsModal :show="showModal"/>
   </teleport>
   <header>
     <div class="logo">

@@ -1,48 +1,69 @@
 <script setup>
 import ValorantLogo from "@/components/icons/ValorantLogo.vue";
+const { show } = defineProps({
+  show: Boolean
+})
 </script>
 
 <template>
-  <div class="backdrop">
-    <div class="results__modal">
-      <div class="top">
-        <h1>Results</h1>
-      </div>
-      <div class="content">
-        <div class="score">
-          <ValorantLogo />
-          <h1>250</h1>
+  <Transition name="fade">
+    <div class="backdrop" v-if="show"></div>
+  </Transition>
+  <Transition name="slide" appear>
+    <div class="modal__wrapper" v-if="show">
+      <div class="results__modal">
+        <div class="top">
+          <h1>Results</h1>
         </div>
-        <div class="ranks">
-          <div class="guessed__rank rank">
-            <h2>Guessed Rank</h2>
-            <img src="/ranks/Immortal_1.png" alt="immortal1"/>
+        <div class="content">
+          <div class="score">
+            <ValorantLogo />
+            <h1>250</h1>
           </div>
-          <div class="actual__rank rank">
-            <h2>Actual Rank</h2>
-            <img src="/ranks/Ascendant_3.png" alt="ascendant3"/>
+          <div class="ranks">
+            <div class="guessed__rank rank">
+              <h2>Guessed Rank</h2>
+              <img src="/ranks/Immortal_1.png" alt="immortal1"/>
+            </div>
+            <div class="actual__rank rank">
+              <h2>Actual Rank</h2>
+              <img src="/ranks/Ascendant_3.png" alt="ascendant3"/>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <style>
   .backdrop {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: fixed;
     top: 0;
-    z-index: 100;
+    left: 0;
+    z-index: 50;
     width: 100%;
     height: 100%;
     background-color: rgba(27, 27, 27, 0.32);
     backdrop-filter: blur(10px);
+    transition:  opacity 300ms ease-in-out;
+  }
+
+  .modal__wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .results__modal {
+    position: fixed;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     width: 90%;
@@ -55,6 +76,8 @@ import ValorantLogo from "@/components/icons/ValorantLogo.vue";
       var(--color-bg-modal-1),
       var(--color-bg-modal-2)
     );
+    z-index: 100;
+    transition: opacity 250ms 700ms ease;
   }
 
   .top {
@@ -119,4 +142,32 @@ import ValorantLogo from "@/components/icons/ValorantLogo.vue";
     min-width: 60px;
     object-fit: contain;
   }
+
+  //Animations
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 250ms ease-in-out
+  }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: transform 250ms 500ms ease;
+  }
+
+  .slide-enter-from,
+  .slide-leave-to {
+    transform: scale(0);
+  }
+
+  .slide-enter-from .results__modal,
+  .slide-leave-to .results__modal {
+    transform: scale(1.1);
+  }
+
+
 </style>
