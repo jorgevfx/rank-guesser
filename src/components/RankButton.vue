@@ -46,8 +46,8 @@
   .rank__button button {
     width: 100%;
     height: 100%;
-    font-size: clamp(16px, 1.5vw, 22px);
-    padding: 0 14px;
+    font-size: clamp(18px, 1.5vw, 26px);
+    padding: 0 18px;
     color: var(--color-text);
     border: 1px solid rgba(232,234,237, .4);
     border-radius: 20px;

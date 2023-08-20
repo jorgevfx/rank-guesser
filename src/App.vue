@@ -42,8 +42,11 @@
     </div>
   </header>
   <main class="main">
-    <div class="video__container">
-      <img src="./assets/valo_video.png" alt="test">
+    <div style="max-width: 1280px" class="video__container">
+      <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+        <iframe src="https://youtube.com/embed/BDTeH61_Fg0" width="1280" height="720" allowfullscreen title="satelite_2kills.mp4" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;">
+        </iframe>
+      </div>
     </div>
     <div class="rank__buttons">
       <RankButton
@@ -78,20 +81,17 @@
   flex-direction: column;
   gap: 40px;
   padding: 1.5rem 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .video__container {
-  display: flex;
-  justify-content: center;
   margin: 0 auto;
   width: 100%;
-  max-width: 1000px;
-  max-height: 450px;
 }
 
-.video__container img {
+.video__container div {
   width: 100%;
-  object-fit: contain;
 }
 
 .rank__buttons {
@@ -109,7 +109,8 @@
   gap: 24px;
   margin: 0 auto;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1400px;
+  min-height: 140px;
 }
 
 .subrank__item {
@@ -133,7 +134,7 @@
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: rotateX(180deg);
 }
 
 /* ensure leaving items are taken out of layout flow so that moving

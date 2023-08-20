@@ -6,28 +6,27 @@ const { show } = defineProps({
 </script>
 
 <template>
-  <Transition name="fade">
-    <div class="backdrop" v-if="show"></div>
-  </Transition>
-  <Transition name="slide" appear>
-    <div class="modal__wrapper" v-if="show">
-      <div class="results__modal">
-        <div class="top">
-          <h1>Results</h1>
-        </div>
-        <div class="content">
-          <div class="score">
-            <ValorantLogo />
-            <h1>250</h1>
+  <Transition :duration="550" name="modal">
+    <div class="backdrop" v-if="show">
+      <div class="modal__wrapper">
+        <div class="results__modal">
+          <div class="top">
+            <h1>Results</h1>
           </div>
-          <div class="ranks">
-            <div class="guessed__rank rank">
-              <h2>Guessed Rank</h2>
-              <img src="/ranks/Immortal_1.png" alt="immortal1"/>
+          <div class="content">
+            <div class="score">
+              <ValorantLogo />
+              <h1>250</h1>
             </div>
-            <div class="actual__rank rank">
-              <h2>Actual Rank</h2>
-              <img src="/ranks/Ascendant_3.png" alt="ascendant3"/>
+            <div class="ranks">
+              <div class="guessed__rank rank">
+                <h2>Guessed Rank</h2>
+                <img src="/ranks/Immortal_1.png" alt="immortal1"/>
+              </div>
+              <div class="actual__rank rank">
+                <h2>Actual Rank</h2>
+                <img src="/ranks/Ascendant_3.png" alt="ascendant3"/>
+              </div>
             </div>
           </div>
         </div>
@@ -38,6 +37,9 @@ const { show } = defineProps({
 
 <style>
   .backdrop {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: fixed;
     top: 0;
     left: 0;
@@ -46,6 +48,7 @@ const { show } = defineProps({
     height: 100%;
     background-color: rgba(27, 27, 27, 0.32);
     backdrop-filter: blur(10px);
+    overflow: hidden;
     transition:  opacity 300ms ease-in-out;
   }
 
@@ -56,14 +59,13 @@ const { show } = defineProps({
     z-index: 100;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
   .results__modal {
-    position: fixed;
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     width: 90%;
@@ -144,29 +146,31 @@ const { show } = defineProps({
   }
 
   //Animations
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 250ms ease-in-out
+  .modal-enter-active, .modal-leave-active {
+    transition: all 300ms ease-in-out;
   }
 
-  .fade-enter-from,
-  .fade-leave-to {
+  .modal-leave-active {
+    transition-delay: 250ms;
+  }
+
+  .modal-enter-from, .modal-leave-to {
     opacity: 0;
   }
 
-  .slide-enter-active,
-  .slide-leave-active {
-    transition: transform 250ms 500ms ease;
+  .modal-enter-active .modal__wrapper,
+  .modal-leave-active .modal__wrapper {
+    transition: all 300ms ease-in-out;
   }
 
-  .slide-enter-from,
-  .slide-leave-to {
-    transform: scale(0);
+  .modal-enter-active .modal__wrapper {
+    transition-delay: 250ms;
   }
 
-  .slide-enter-from .results__modal,
-  .slide-leave-to .results__modal {
-    transform: scale(1.1);
+  .modal-enter-from .modal__wrapper,
+  .modal-leave-to .modal__wrapper {
+    opacity: 0;
+    transform: scale(0.5);
   }
 
 
