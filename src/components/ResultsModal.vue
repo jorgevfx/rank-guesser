@@ -48,8 +48,9 @@ const { show } = defineProps({
     height: 100%;
     background-color: rgba(27, 27, 27, 0.32);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     overflow: hidden;
-    transition:  opacity 300ms ease-in-out;
+    transition: opacity 300ms ease-in-out;
   }
 
   .modal__wrapper {
@@ -91,7 +92,7 @@ const { show } = defineProps({
   }
 
   .top h1 {
-    padding: clamp(1.5rem, 5vw, 2rem);
+    padding: clamp(1rem, 5vw, 2rem);
     font-size: clamp(36px, 5vw, 54px);
     letter-spacing: 0.1em;
   }
@@ -173,5 +174,13 @@ const { show } = defineProps({
     transform: scale(0.5);
   }
 
+  @media screen and (max-width: 768px) {
+    .results__modal {
+      border-radius: 30px;
+    }
 
+    .top {
+      border-radius: 30px 30px 0 0;
+    }
+  }
 </style>

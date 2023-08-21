@@ -114,8 +114,8 @@
 }
 
 .subrank__item {
-  width: clamp(100px, 20vw, 130px);
-  height: clamp(100px, 20vw, 130px);
+  width: clamp(84px, 20vw, 130px);
+  height: clamp(84px, 20vw, 130px);
 }
 
 .subrank__item img {
@@ -141,5 +141,18 @@
    animations can be calculated correctly. */
 .list-leave-active {
   position: absolute;
+}
+
+@media screen and (max-width: 768px) {
+  .main {
+    gap: 24px;
+  }
+  .subranks__list {
+    gap: 12px;
+  }
+
+  .rank__buttons {
+    gap: 8px;
+  }
 }
 </style>

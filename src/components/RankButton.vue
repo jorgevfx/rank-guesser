@@ -46,7 +46,8 @@
   .rank__button button {
     width: 100%;
     height: 100%;
-    font-size: clamp(18px, 1.5vw, 26px);
+    min-width: 114px;
+    font-size: clamp(12px, 1.5vw, 26px);
     padding: 0 18px;
     color: var(--color-text);
     border: 1px solid rgba(232,234,237, .4);
@@ -63,5 +64,12 @@
 
   .rank__button button:active {
     transform: scale(.95);
+  }
+
+  @media screen and (max-width: 768px) {
+    .rank__button button {
+      padding: 0 8px;
+      min-width: 84px;
+    }
   }
 </style>
