@@ -1,8 +1,7 @@
 import apiClient from "@/services/base";
 
-const SESSION_STORAGE_KEY = 'clips';
-const localDate = new Date();
-const date = new Date(localDate.getTime() - (localDate.getTimezoneOffset() * 60000))
+const COOKIE_NAME = 'clips';
+const COOKIE_EXPIRATION_DAYS = 1;
 
 export const getClipsFromCacheOrApi = async () => {
     const cachedClips = getCachedClips();
@@ -27,13 +26,14 @@ const areClipsValid = (cachedClips) => {
     }
 
     const expirationTime = new Date(cachedClips.expirationTime).getTime();
-    const currentTime = date.getTime();
+    const currentTime = new Date().getTime();
 
     return expirationTime > currentTime;
 }
 
 const cacheClips = (clips) => {
-    const expirationTime = date.setHours(24,0,0,0)
+    const expirationTime = new Date();
+    expirationTime.setDate(expirationTime.getDate() + COOKIE_EXPIRATION_DAYS);
 
     const mappedClips = clips.map(clip => ({
         ...clip,
@@ -44,10 +44,19 @@ const cacheClips = (clips) => {
         clips: mappedClips,
         expirationTime: expirationTime.toISOString()
     };
-    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(dataToCache));
+
+    const jsonData = JSON.stringify(dataToCache);
+
+    document.cookie = `${COOKIE_NAME}=${jsonData}; expires=${expirationTime.toUTCString()}; path=/`;
 }
 
 const getCachedClips = () => {
-    const data = sessionStorage.getItem(SESSION_STORAGE_KEY);
-    return data ? JSON.parse(data) : null;
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === COOKIE_NAME) {
+            return JSON.parse(decodeURIComponent(value));
+        }
+    }
+    return null;
 }
