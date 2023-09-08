@@ -2,11 +2,27 @@
   import VALORANT_RANKS from "@/utils/constants";
   import RankButton from "@/components/RankButton.vue";
   import { computed, ref } from "vue";
+  import { useQuery } from '@tanstack/vue-query'
   import ResultsModal from "@/components/ResultsModal.vue";
+  import { getClipsFromCacheOrApi } from "@/services/clipService"
 
   const showModal = ref(false);
   const selectedRank = ref("");
   const selectedButton = ref(null);
+
+  useQuery({
+    queryKey: ['clips'],
+    queryFn: async () => {
+      return await getClipsFromCacheOrApi()
+    },
+    onSuccess: (data) => {
+      console.log(data)
+    },
+    onError: (err) => {
+      console.log(err)
+    }
+  })
+
 
   const getSubRanks = computed(() => {
     for(const key in VALORANT_RANKS){
@@ -81,6 +97,8 @@
   flex-direction: column;
   gap: 40px;
   padding: 1.5rem 0;
+  max-width: 1020px;
+  margin: 0 auto;
   position: relative;
   overflow: hidden;
 }
