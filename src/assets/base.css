@@ -12,6 +12,8 @@
   --color-bg-modal-top: #131010;
   --color-bg-modal-1: #2F2F2F;
   --color-bg-modal-2: #121818;
+
+  --tooltip: #3471e2;
 }
 
 @media (prefers-color-scheme: light) {
