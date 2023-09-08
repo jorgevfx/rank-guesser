@@ -1,7 +1,7 @@
 <script setup>
   import VALORANT_RANKS from "@/utils/constants";
   import RankButton from "@/components/RankButton.vue";
-  import { computed, ref } from "vue";
+  import {computed, reactive, ref} from "vue";
   import { useQuery } from '@tanstack/vue-query'
   import ResultsModal from "@/components/ResultsModal.vue";
   import { getClipsFromCacheOrApi } from "@/services/clipService"
@@ -10,6 +10,7 @@
   const showModal = ref(false);
   const selectedRank = ref("");
   const selectedButton = ref(null);
+  const seenClips = ref(0)
 
   useQuery({
     queryKey: ['clips'],
@@ -36,6 +37,11 @@
 
   const toggleModal = () => {
     showModal.value = !showModal.value;
+    selectedRank.value = "";
+    if(!showModal.value){
+      handleSelectedRank("", selectedButton.value)
+      seenClips.value += 1;
+    }
   };
 
   const handleSelectedRank = (rank, buttonRef) => {
@@ -51,7 +57,7 @@
 
 <template>
   <teleport to=".modals">
-    <ResultsModal :show="showModal"/>
+    <ResultsModal :show="showModal" @close-modal="toggleModal"/>
   </teleport>
   <header>
     <div class="logo">
@@ -59,7 +65,7 @@
     </div>
   </header>
   <main class="main">
-    <ClipProgress :seen-clips="0" />
+    <ClipProgress :seen-clips="seenClips"/>
     <div style="max-width: 1280px" class="video__container">
       <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
         <iframe src="https://youtube.com/embed/BDTeH61_Fg0" width="1280" height="720" allowfullscreen title="satelite_2kills.mp4" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;">

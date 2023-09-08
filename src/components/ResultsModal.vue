@@ -3,6 +3,7 @@
   import { reactive } from "vue";
   import { gsap } from "gsap";
 
+  const emit = defineEmits(['closeModal'])
   const { show } = defineProps({
     show: Boolean
   })
@@ -19,6 +20,11 @@
       }
     });
   };
+
+  const handleModalClose = () => {
+    points.value = 0;
+    emit("closeModal");
+  }
 </script>
 
 <template>
@@ -43,6 +49,9 @@
                 <h2>Actual Rank</h2>
                 <img src="/ranks/Ascendant_3.png" alt="ascendant3"/>
               </div>
+            </div>
+            <div class="next">
+              <span @click="handleModalClose">Next ></span>
             </div>
           </div>
         </div>
@@ -160,6 +169,17 @@
     width: 40%;
     min-width: 60px;
     object-fit: contain;
+  }
+
+  .next{
+    width: 100%;
+    padding: .5rem 1rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .next span {
+    cursor: pointer;
   }
 
   //Animations

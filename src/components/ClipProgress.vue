@@ -1,27 +1,23 @@
 <script setup>
-  import {computed} from "vue";
-
   const { seenClips } = defineProps({
     seenClips: {
       type: Number,
       required: true
     },
   })
-
-  const getProgressClassName = computed(() => ({
-    "zero": seenClips === 0,
-    "one": seenClips === 1,
-    "two": seenClips === 2,
-    "three": seenClips === 3,
-    "four": seenClips === 4,
-    "five": seenClips === 5,
-  }))
 </script>
 
 <template>
   <div class="progress-box">
     <div class="progress-bar">
-      <span class="progress-tooltip " :class="getProgressClassName">
+      <span class="progress-tooltip " :class="{
+        zero: seenClips === 0,
+        one: seenClips === 1,
+        two: seenClips === 2,
+        three: seenClips === 3,
+        four: seenClips === 4,
+        five: seenClips === 5,
+      }">
           <span class="tooltip">{{seenClips}}</span>
       </span>
     </div>
@@ -58,9 +54,9 @@
   height: 100%;
   border-radius: 6px;
   background: var(--tooltip);
-  animation: progress 0.4s ease-in-out forwards;
-  opacity: 0;
-  animation-delay: 0.2s;
+  transition: width 0.4s ease-in-out;
+  transition-delay: 0.5s;
+  opacity: 1;
 }
 
 .progress-tooltip.zero{
@@ -68,33 +64,23 @@
 }
 
 .progress-tooltip.one{
-  width: 20%
+  width: 20%;
 }
 
 .progress-tooltip.two{
-  width: 40%
+  width: 40%;
 }
 
 .progress-tooltip.three{
-  width: 60%
+  width: 60%;
 }
 
 .progress-tooltip.four{
-  width: 80%
+  width: 80%;
 }
 
 .progress-tooltip.five{
-  width: 100%
-}
-
-@keyframes progress {
-  0%{
-    width: 0;
-    opacity: 1;
-  }
-  100%{
-    opacity: 1;
-  }
+  width: 100%;
 }
 
 .progress-tooltip .tooltip{
