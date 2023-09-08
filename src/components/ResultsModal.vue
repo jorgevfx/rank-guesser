@@ -1,12 +1,28 @@
 <script setup>
-import ValorantLogo from "@/components/icons/ValorantLogo.vue";
-const { show } = defineProps({
-  show: Boolean
-})
+  import ValorantLogo from "@/components/icons/ValorantLogo.vue";
+  import { reactive } from "vue";
+  import { gsap } from "gsap";
+
+  const { show } = defineProps({
+    show: Boolean
+  })
+  const points = reactive({
+    value: 0
+  })
+
+  const onModalEnter = () => {
+    gsap.to(points, {
+      value: 200,
+      duration: 0.5,
+      onUpdate: () => {
+        points.value = Math.round(points.value);
+      }
+    });
+  };
 </script>
 
 <template>
-  <Transition :duration="550" name="modal">
+  <Transition :duration="550" name="modal" @after-enter="onModalEnter">
     <div class="backdrop" v-if="show">
       <div class="modal__wrapper">
         <div class="results__modal">
@@ -16,7 +32,7 @@ const { show } = defineProps({
           <div class="content">
             <div class="score">
               <ValorantLogo />
-              <h1>250</h1>
+              <h1> {{ points.value }} </h1>
             </div>
             <div class="ranks">
               <div class="guessed__rank rank">
