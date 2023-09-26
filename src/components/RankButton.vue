@@ -1,11 +1,15 @@
 <script setup>
   const emit = defineEmits(['selected-rank']);
 
-  const { rank } = defineProps({
+  const { rank, isDisabled } = defineProps({
     rank: {
       type: String,
       required: true
     },
+    isDisabled: {
+      type: Boolean,
+      default: false
+    }
   })
 
   const toggleSelected = (buttonRef) => {
@@ -21,7 +25,7 @@
 
 <template>
   <div class="rank__button">
-    <button type="button" @click="toggleSelected($event.target)">{{ rank }}</button>
+    <button type="button" :disabled="isDisabled" @click="toggleSelected($event.target)">{{ rank }}</button>
   </div>
 </template>
 
@@ -64,6 +68,20 @@
 
   .rank__button button:active {
     transform: scale(.95);
+  }
+
+  .rank__button button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+  }
+
+  .rank__button button:disabled:hover {
+    background-color: transparent;
+    border-color: rgba(232,234,237, .4);
+  }
+
+  .rank__button button:disabled:active {
+    transform: none;
   }
 
   @media screen and (max-width: 768px) {
