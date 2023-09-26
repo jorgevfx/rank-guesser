@@ -1,62 +1,68 @@
 import apiClient from "@/services/base";
 
-const COOKIE_NAME = 'clips';
-const COOKIE_EXPIRATION_DAYS = 1;
-
-export const getClipsFromCacheOrApi = async () => {
-    const cachedClips = getCachedClips();
-
-    if (areClipsValid(cachedClips)) {
-        return cachedClips.clips;
-    }
-
-    const clips = await getClips();
-    cacheClips(clips);
-    return clips;
-}
+const LOCAL_STORAGE_KEY = 'clips';
 
 const getClips = async () => {
     const response = await apiClient.get('/clip');
     return response.data;
 }
 
-const areClipsValid = (cachedClips) => {
-    if (!cachedClips) {
-        return false;
-    }
+const guessClip = async ({clipId, subRank}) => {
+    const response = await apiClient.post(`/clip/${clipId}/guess`, {
+        guessedRank: subRank
+    });
+    return response.data;
+}
 
-    const expirationTime = new Date(cachedClips.expirationTime).getTime();
-    const currentTime = new Date().getTime();
+const areClipsExpired = () => {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    return now > midnight;
+}
 
-    return expirationTime > currentTime;
+const getFirstNotSeenClip = (clips) => {
+    return clips.find(clip => !clip.seen);
+}
+
+const getTotalSeenClips = (clips) => {
+    return clips.filter(clip => clip.seen).length;
+}
+
+const setClipAsSeen = (clips, clipId) => {
+    const clipIndex = clips.findIndex(clip => clip.id === clipId);
+    clips[clipIndex].seen = true;
+    return clips;
+}
+
+const updateCachedClips = (clips) => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(clips));
 }
 
 const cacheClips = (clips) => {
-    const expirationTime = new Date();
-    expirationTime.setDate(expirationTime.getDate() + COOKIE_EXPIRATION_DAYS);
-
     const mappedClips = clips.map(clip => ({
         ...clip,
         seen: false
     }));
 
-    const dataToCache = {
-        clips: mappedClips,
-        expirationTime: expirationTime.toISOString()
-    };
-
-    const jsonData = JSON.stringify(dataToCache);
-
-    document.cookie = `${COOKIE_NAME}=${jsonData}; expires=${expirationTime.toUTCString()}; path=/`;
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mappedClips));
 }
 
 const getCachedClips = () => {
-    const cookies = document.cookie.split(';');
-    for (const cookie of cookies) {
-        const [name, value] = cookie.trim().split('=');
-        if (name === COOKIE_NAME) {
-            return JSON.parse(decodeURIComponent(value));
-        }
-    }
-    return null;
+    return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+}
+
+const areClipsCached = () => {
+    return !!getCachedClips();
+}
+
+export {
+    getClips,
+    guessClip,
+    getFirstNotSeenClip,
+    getTotalSeenClips,
+    setClipAsSeen,
+    updateCachedClips,
+    cacheClips,
+    areClipsCached,
+    getCachedClips
 }
