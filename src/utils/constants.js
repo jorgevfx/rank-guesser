@@ -1,35 +1,35 @@
 const VALORANT_RANKS = {
     iron : {
         name: "Iron",
-        subRanks: ["Iron_1", "Iron_2", "Iron_3"]
+        subRanks: ["Iron1", "Iron2", "Iron3"]
     },
     bronze : {
         name: "Bronze",
-        subRanks: ["Bronze_1", "Bronze_2", "Bronze_3"]
+        subRanks: ["Bronze1", "Bronze2", "Bronze3"]
     },
     silver : {
         name: "Silver",
-        subRanks: ["Silver_1", "Silver_2", "Silver_3"]
+        subRanks: ["Silver1", "Silver2", "Silver3"]
     },
     gold : {
         name: "Gold",
-        subRanks: ["Gold_1", "Gold_2", "Gold_3"]
+        subRanks: ["Gold1", "Gold2", "Gold3"]
     },
     platinum : {
         name: "Platinum",
-        subRanks: ["Platinum_1", "Platinum_2", "Platinum_3"]
+        subRanks: ["Platinum1", "Platinum2", "Platinum3"]
     },
     diamond : {
         name: "Diamond",
-        subRanks: ["Diamond_1", "Diamond_2", "Diamond_3"]
+        subRanks: ["Diamond1", "Diamond2", "Diamond3"]
     },
     ascendant : {
         name: "Ascendant",
-        subRanks: ["Ascendant_1", "Ascendant_2", "Ascendant_3"]
+        subRanks: ["Ascendant1", "Ascendant2", "Ascendant3"]
     },
     immortal : {
         name: "Immortal",
-        subRanks: ["Immortal_1", "Immortal_2", "Immortal_3"]
+        subRanks: ["Immortal1", "Immortal2", "Immortal3"]
     },
     radiant : {
         name: "Radiant",
