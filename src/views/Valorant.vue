@@ -13,6 +13,8 @@ import {
 } from "@/services/clipService"
 import ClipProgress from "@/components/ClipProgress.vue";
 import ResultsModal from "@/components/ResultsModal.vue";
+import FinalResults from "@/components/FinalResults.vue";
+import {toast} from "vue-sonner";
 
 const clips = ref([])
 const actualClip = reactive({
@@ -26,24 +28,39 @@ const selectedRank = ref("");
 const selectedButton = ref(null);
 const seenClips = ref(0);
 
-const {data, isLoading, isError} = useQuery({
+const {data, isLoading, isError, error} = useQuery({
   queryKey: ['clips'],
   queryFn: getClips,
   enabled: !areClipsCached(),
 })
 
+watch(isError, (newIsError) => {
+  if (newIsError) {
+    toast.error(error.value.message)
+  }
+});
+
 onMounted(() => {
+  // Check if clips are cached
   if (areClipsCached()) {
+    // If clips are cached, load them from cache
     clips.value = getCachedClips();
+    // Get the first unseen clip from the cached data
     actualClip.value = getFirstNotSeenClip(clips.value);
+    // Calculate the number of seen clips
     seenClips.value = getTotalSeenClips(clips.value);
   } else {
+    // If there are no cached clips, watch for data updates
     watch(data, (newData) => {
+      // Cache the newly loaded clips
       cacheClips(newData);
+      // Update the clips variable with the newly cached clips
       clips.value = getCachedClips();
+      // Get the first unseen clip from the newly cached data
       actualClip.value = getFirstNotSeenClip(clips.value);
+      // Calculate the number of seen clips
       seenClips.value = getTotalSeenClips(clips.value);
-    })
+    });
   }
 });
 
@@ -68,10 +85,12 @@ const closeModal = (isError) => {
 
 const nextClip = () => {
   seenClips.value++;
-  const updatedClips = setClipAsSeen(clips.value, actualClip.value["id"]);
-  clips.value = updatedClips;
-  updateCachedClips(updatedClips);
-  actualClip.value = getFirstNotSeenClip(updatedClips);
+  if(seenClips.value<=5){
+    const updatedClips = setClipAsSeen(clips.value, actualClip.value["id"]);
+    clips.value = updatedClips;
+    updateCachedClips(updatedClips);
+    actualClip.value = getFirstNotSeenClip(updatedClips);
+  }
 };
 
 const getSubRanks = computed(() => {
@@ -96,39 +115,48 @@ const handleSelectedRank = (rank, buttonRef) => {
 <template>
   <teleport to=".modals">
     <ResultsModal
-        :clip-id="actualClip.value['id']"
+        :clip-id="seenClips<5 ? actualClip.value['id'] : ''"
         :guessed-rank="guessedRank.value"
         :show="showModal"
         @close-modal="closeModal"
     />
   </teleport>
   <ClipProgress :seen-clips="seenClips"/>
-  <div style="max-width: 1280px" class="video__container">
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-      <iframe :src="actualClip.value['youtube_url']"
-              width="1280" height="720" allowfullscreen
-              title="satelite_2kills.mp4"
-              style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;">
-      </iframe>
+  <div class="wrapper" v-if="seenClips<5">
+    <div style="max-width: 1280px" class="video__container">
+      <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+        <iframe :src="actualClip.value['youtube_url']"
+                width="1280" height="720" allowfullscreen
+                title="satelite_2kills.mp4"
+                style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;">
+        </iframe>
+      </div>
     </div>
+    <div class="rank__buttons">
+      <RankButton
+          v-for="rank in Object.keys(VALORANT_RANKS)"
+          :key="rank"
+          :rank="rank"
+          :is-disabled="areClipsCached() ? false : isLoading || isError"
+          @selected-rank="handleSelectedRank"
+      />
+    </div>
+    <TransitionGroup name="list" tag="ul" class="subranks__list">
+      <li v-for="subRank in getSubRanks" :key="subRank" class="subrank__item">
+        <img :src="`/ranks/${subRank}.png`" :alt="subRank" @click="showResults(subRank)">
+      </li>
+    </TransitionGroup>
   </div>
-  <div class="rank__buttons">
-    <RankButton
-        v-for="rank in Object.keys(VALORANT_RANKS)"
-        :key="rank"
-        :rank="rank"
-        :is-disabled="areClipsCached() ? false : isLoading || isError"
-        @selected-rank="handleSelectedRank"
-    />
-  </div>
-  <TransitionGroup name="list" tag="ul" class="subranks__list">
-    <li v-for="subRank in getSubRanks" :key="subRank" class="subrank__item">
-      <img :src="`/ranks/${subRank}.png`" :alt="subRank" @click="showResults(subRank)">
-    </li>
-  </TransitionGroup>
+  <FinalResults v-else/>
 </template>
 
 <style>
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .video__container {
   margin: 0 auto;
   width: 100%;
