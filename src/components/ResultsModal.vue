@@ -21,7 +21,7 @@ const earnPoints = reactive({
   value: 0
 })
 
-const {isError, mutateAsync} = useMutation({
+const {isError, data, mutateAsync} = useMutation({
   mutationFn: guessClip,
   onSuccess: ({guessedRank, actualRank, points}) => {
     results.guessedRank = guessedRank;
@@ -40,10 +40,10 @@ const {isError, mutateAsync} = useMutation({
 })
 
 const onModalEnter = async () => {
-  // await mutateAsync({
-  //   clipId: props.clipId,
-  //   subRank: props.guessedRank
-  // });
+  await mutateAsync({
+    clipId: props.clipId,
+    subRank: props.guessedRank
+  });
 };
 
 const handleModalClose = () => {
@@ -83,7 +83,8 @@ const handleModalClose = () => {
               </div>
             </div>
             <div class="next">
-              <span @click="handleModalClose">Next ></span>
+              <span v-if="data!==undefined && !isError" @click="handleModalClose">Next ></span>
+              <span v-if="isError" @click="handleModalClose">Close</span>
             </div>
           </div>
         </div>
