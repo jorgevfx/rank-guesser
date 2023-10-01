@@ -1,23 +1,18 @@
 import apiClient from "@/services/base";
 
-const LOCAL_STORAGE_KEY = 'clips';
+const CLIPS_LOCAL_STORAGE_KEY = 'clips';
+const EXPIRATION_LOCAL_STORAGE_KEY = 'clips_expiration';
 
 const getClips = async () => {
     const response = await apiClient.get('/clip');
     return response.data;
 }
 
-const guessClip = async ({clipId, subRank}) => {
+const guessClip = async ({ clipId, subRank }) => {
     const response = await apiClient.post(`/clip/${clipId}/guess`, {
         guessedRank: subRank
     });
     return response.data;
-}
-
-const areClipsExpired = () => {
-    const now = new Date();
-    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-    return now > midnight;
 }
 
 const getFirstNotSeenClip = (clips) => {
@@ -35,7 +30,32 @@ const setClipAsSeen = (clips, clipId) => {
 }
 
 const updateCachedClips = (clips) => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(clips));
+    localStorage.setItem(CLIPS_LOCAL_STORAGE_KEY, JSON.stringify(clips));
+}
+
+const setExpirationDate = () => {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
+    localStorage.setItem(EXPIRATION_LOCAL_STORAGE_KEY, midnight.getTime().toString());
+}
+
+const checkExpirationDate = () => {
+    const expirationTime = localStorage.getItem(EXPIRATION_LOCAL_STORAGE_KEY);
+
+    if (!expirationTime) {
+        return true;
+    }
+    const now = new Date();
+
+    return now.getTime() < parseInt(expirationTime);
+}
+
+const areClipsCached = () => {
+    const cachedData = JSON.parse(localStorage.getItem(CLIPS_LOCAL_STORAGE_KEY));
+    const areClipsExpired = checkExpirationDate();
+
+    return !(!cachedData || areClipsExpired);
 }
 
 const cacheClips = (clips) => {
@@ -44,15 +64,12 @@ const cacheClips = (clips) => {
         seen: false
     }));
 
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mappedClips));
+    setExpirationDate();
+    localStorage.setItem(CLIPS_LOCAL_STORAGE_KEY, JSON.stringify(mappedClips));
 }
 
 const getCachedClips = () => {
-    return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-}
-
-const areClipsCached = () => {
-    return !!getCachedClips();
+    return JSON.parse(localStorage.getItem(CLIPS_LOCAL_STORAGE_KEY));
 }
 
 export {
