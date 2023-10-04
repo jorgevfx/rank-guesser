@@ -29,7 +29,10 @@ import {Toaster} from "vue-sonner";
 .main {
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 40px;
+  width: 100%;
+  height: 100%;
   padding: 1.5rem 0;
   max-width: 1020px;
   margin: 0 auto;
