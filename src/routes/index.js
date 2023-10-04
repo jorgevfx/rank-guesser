@@ -1,18 +1,18 @@
-import Home from "@/views/Home.vue";
 import Valorant from "@/views/Valorant.vue";
 import {createRouter, createWebHistory} from "vue-router";
+import UnderConstruction from "@/views/UnderConstruction.vue";
 
 const routes = [
-    {
-        path: '/',
-        name: 'Home',
-        component: Home
-    },
     {
         path: '/valorant',
         name: 'Valorant',
         component: Valorant,
         props: true
+    },
+    {
+        path: '/:catchAll(.*)',
+        name: 'UnderConstruction',
+        component: UnderConstruction,
     }
 ];
 
