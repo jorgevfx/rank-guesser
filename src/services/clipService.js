@@ -48,14 +48,14 @@ const checkExpirationDate = () => {
     }
     const now = new Date();
 
-    return now.getTime() < parseInt(expirationTime);
+    return now.getTime() >= parseInt(expirationTime);
 }
 
 const areClipsCached = () => {
     const cachedData = JSON.parse(localStorage.getItem(CLIPS_LOCAL_STORAGE_KEY));
     const areClipsExpired = checkExpirationDate();
 
-    return !(!cachedData || areClipsExpired);
+    return cachedData && !areClipsExpired;
 }
 
 const cacheClips = (clips) => {
