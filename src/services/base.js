@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8080/api/v1',
+    baseURL: 'https://rank-guesser-api-b771eaee3676.herokuapp.com/api/v1',
     withCredentials: false,
     headers: {
         Accept: 'application/json',
