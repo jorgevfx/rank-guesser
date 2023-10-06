@@ -3,7 +3,10 @@ import {Toaster} from "vue-sonner";
 </script>
 
 <template>
-  <Toaster theme="dark"/>
+  <Toaster
+      theme="dark"
+      rich-colors
+  />
   <header>
     <div class="logo">
       <img src="/logo.png" alt="logo">
