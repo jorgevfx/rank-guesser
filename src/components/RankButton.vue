@@ -25,7 +25,7 @@
 
 <template>
   <div class="rank__button">
-    <button type="button" :disabled="isDisabled" @click="toggleSelected($event.target)">{{ rank }}</button>
+    <button class="valorant-font" type="button" :disabled="isDisabled" @click="toggleSelected($event.target)">{{ rank }}</button>
   </div>
 </template>
 

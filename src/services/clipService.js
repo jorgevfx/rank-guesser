@@ -42,6 +42,11 @@ const setExpirationDate = () => {
     localStorage.setItem(EXPIRATION_LOCAL_STORAGE_KEY, midnight.getTime().toString());
 }
 
+const resetCachedClips = () => {
+    localStorage.removeItem(CLIPS_LOCAL_STORAGE_KEY);
+    localStorage.removeItem(EXPIRATION_LOCAL_STORAGE_KEY);
+}
+
 const checkExpirationDate = () => {
     const expirationTime = localStorage.getItem(EXPIRATION_LOCAL_STORAGE_KEY);
 
@@ -79,6 +84,7 @@ export {
     guessClip,
     getFirstNotSeenClip,
     getTotalSeenClips,
+    resetCachedClips,
     setClipAsSeen,
     updateCachedClips,
     cacheClips,

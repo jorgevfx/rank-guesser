@@ -72,9 +72,9 @@ const showResults = (subRank) => {
   handleSelectedRank("", selectedButton.value)
 };
 
-const closeModal = (isError) => {
+const closeModal = (isSuccess) => {
   showModal.value = false;
-  if(!isError.value) {
+  if(isSuccess) {
     nextClip();
   }
   window.scrollTo({

@@ -18,7 +18,7 @@
         four: seenClips === 4,
         five: seenClips === 5,
       }">
-          <span class="tooltip">{{seenClips}}</span>
+          <span class="tooltip valorant-font">{{seenClips}}</span>
       </span>
     </div>
 <!--    <span class="title">Seen clips</span>-->

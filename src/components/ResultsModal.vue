@@ -3,8 +3,9 @@ import ValorantLogo from "@/components/icons/ValorantLogo.vue";
 import {reactive} from "vue";
 import {gsap} from "gsap";
 import {useMutation} from "@tanstack/vue-query";
-import {guessClip} from "@/services/clipService";
+import {guessClip, resetCachedClips} from "@/services/clipService";
 import {toast} from "vue-sonner";
+import Spinner from "@/components/icons/Spinner.vue";
 
 const emit = defineEmits(['closeModal'])
 const props = defineProps({
@@ -12,8 +13,8 @@ const props = defineProps({
   guessedRank: String,
   clipId: String
 })
-
 const results = reactive({
+  points: 0,
   guessedRank: "",
   actualRank: ""
 })
@@ -21,71 +22,87 @@ const earnPoints = reactive({
   value: 0
 })
 
-const {isError, isLoading, data, mutateAsync} = useMutation({
+const {mutate, isSuccess, isLoading, reset} = useMutation({
   mutationFn: guessClip,
   onSuccess: ({guessedRank, actualRank, points}) => {
     results.guessedRank = guessedRank;
     results.actualRank = actualRank;
-    gsap.to(earnPoints, {
-      value: points,
-      duration: 0.5,
-      onUpdate: () => {
-        earnPoints.value = Math.round(earnPoints.value);
-      }
-    });
+    results.points = points;
   },
   onError: ({response}) => {
-    toast.error(response.data.message)
+    if(response?.status===404){
+      toast.error("Your progress will be reset because you have outdated clips")
+      setTimeout(() => {
+        resetCachedClips();
+        window.location.reload();
+      }, 2000)
+    } else {
+      toast.error(response?.data?.message || "Something went wrong")
+      handleModalClose();
+    }
   }
 })
 
-const onModalEnter = async () => {
-  await mutateAsync({
+const onModalEnter = () => {
+  mutate({
     clipId: props.clipId,
     subRank: props.guessedRank
   });
 };
 
+const afterModalEnter = () => {
+  gsap.to(earnPoints, {
+    value: results.points,
+    duration: 0.5,
+    onUpdate: () => {
+      earnPoints.value = Math.round(earnPoints.value);
+    }
+  });
+}
+
 const handleModalClose = () => {
-  earnPoints.value = 0;
   results.guessedRank = "";
   results.actualRank = "";
-  emit("closeModal", isError);
+  results.points = 0;
+  earnPoints.value = 0;
+  emit("closeModal", isSuccess.value);
+  reset();
 }
 </script>
 
 <template>
-  <Transition :duration="550" name="modal" @after-enter="onModalEnter">
+  <Transition name="backdrop" @after-enter="onModalEnter">
     <div class="backdrop" v-if="props.show">
-      <div class="modal__wrapper">
-        <div class="results__modal">
-          <div class="top">
-            <h1>Results</h1>
+      <Spinner v-if="isLoading"/>
+    </div>
+  </Transition>
+  <Transition name="modal" @after-enter="afterModalEnter">
+    <div class="modal__wrapper valorant-font" v-if="isSuccess && props.show">
+      <div class="results__modal">
+        <div class="top">
+          <h1 class="valorant-font">Results</h1>
+        </div>
+        <div class="content">
+          <div class="score">
+            <ValorantLogo/>
+            <h1 class="valorant-font"> {{ earnPoints.value }} </h1>
           </div>
-          <div class="content">
-            <div class="score">
-              <ValorantLogo/>
-              <h1> {{ earnPoints.value }} </h1>
-            </div>
-            <div class="ranks">
-              <div class="guessed__rank rank">
-                <h2>Guessed Rank</h2>
-                <Transition name="rank__image">
-                  <img v-if="results.guessedRank!==''" :src="`/ranks/${results.guessedRank}.png`" :alt="results.guessedRank"/>
-                </Transition>
-              </div>
-              <div class="actual__rank rank">
-                <h2>Actual Rank</h2>
-                <Transition name="rank__image">
-                  <img v-if="results.guessedRank!==''" :src="`/ranks/${results.actualRank}.png`" :alt="results.actualRank"/>
-                </Transition>
-
+          <div class="ranks">
+            <div class="guessed__rank rank">
+              <h2 class="valorant-font">Guessed Rank</h2>
+              <div class="rank__image">
+                <img :src="`/ranks/${results.guessedRank}.png`" :alt="results.guessedRank"/>
               </div>
             </div>
-            <div class="next">
-              <span v-if="data!==undefined && !isError && !isLoading" @click="handleModalClose">Next ></span>
-              <span v-if="isError" @click="handleModalClose">Close</span>
+            <div class="actual__rank rank">
+              <h2 class="valorant-font">Actual Rank</h2>
+              <div class="rank__image">
+                <img :src="`/ranks/${results.actualRank}.png`" :alt="results.actualRank"/>
+              </div>
             </div>
+          </div>
+          <div class="next">
+            <span class="valorant-font" @click="handleModalClose()">Next ></span>
           </div>
         </div>
       </div>
@@ -122,7 +139,7 @@ const handleModalClose = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: height 300ms ease-in-out;
+  transition: all 300ms ease-in-out;
 }
 
 .results__modal {
@@ -200,11 +217,19 @@ const handleModalClose = () => {
   text-align: center;
 }
 
-.rank img, .rank svg {
-  width: 40%;
-  min-width: 60px;
+.rank div {
+  width: 100%;
+  height: 100%;
+  min-height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rank img {
+  width: 42%;
+  min-width: 80px;
   object-fit: contain;
-  transition: opacity 300ms ease-in-out;
 }
 
 .next {
@@ -218,55 +243,23 @@ const handleModalClose = () => {
   cursor: pointer;
 }
 
-.unknown__rank {
-
-}
-
 //Animations
-.modal-enter-active, .modal-leave-active {
+.backdrop-enter-active, .backdrop-leave-active {
   transition: all 300ms ease-in-out;
 }
 
-.modal-leave-active {
+.backdrop-leave-active {
   transition-delay: 250ms;
 }
 
-.modal-enter-from, .modal-leave-to {
+.backdrop-enter-from, .backdrop-leave-to {
   opacity: 0;
 }
 
-.modal-enter-active .modal__wrapper,
-.modal-leave-active .modal__wrapper {
-  transition: all 300ms ease-in-out;
-}
-
-.modal-enter-active .modal__wrapper {
-  transition-delay: 250ms;
-}
-
-.modal-enter-from .modal__wrapper,
-.modal-leave-to .modal__wrapper {
+.modal-enter-from,
+.modal-leave-to {
   opacity: 0;
   transform: scale(0.5);
-}
-
-.rank__image-enter-active {
-  animation: bounce-in 0.5s;
-}
-.rank__image-leave-active {
-  animation: bounce-in 0.5s reverse;
-}
-
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.25);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
 
 @media screen and (max-width: 768px) {
