@@ -4,7 +4,7 @@
 Platform for guessing a player's rank in any game; however, it mainly focuses on Valorant. The platform is built using Vue 3 and Vite and utilizes its own API, which can be found [here](https://github.com/jorgevfx/api-rank-guesser).
 
 ## Website
-Soon...
+https://rank-guesser.pages.dev/valorant
 
 ## Getting Started
 
