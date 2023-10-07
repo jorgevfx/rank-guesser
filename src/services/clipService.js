@@ -37,6 +37,8 @@ const setExpirationDate = () => {
     const now = new Date();
     const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
 
+    midnight.setDate(midnight.getDate() + 1);
+
     localStorage.setItem(EXPIRATION_LOCAL_STORAGE_KEY, midnight.getTime().toString());
 }
 
