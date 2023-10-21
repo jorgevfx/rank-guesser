@@ -44,6 +44,6 @@ If you want to avoid the hassle of all these commands, you can use [GitHub Deskt
 This project is licensed under the GLP-3.0 License. See the [LICENSE](LICENSE) file for more information.
 
 ## Contact
-- Discord: j0rgitopro
+- Discord: jorgecodess
 
 Thanks for being part of this project! ❤️
