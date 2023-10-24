@@ -2,6 +2,9 @@
 import {Vue3Lottie} from 'vue3-lottie';
 import TrophyJSON from '@/assets/lotties/TrophyJSON.json';
 import DoneJSON from '@/assets/lotties/DoneJSON.json';
+import MarkJSON from '@/assets/lotties/MarkJSON.json';
+import LikeJSON from '@/assets/lotties/LikeJSON.json';
+import SilverMedalJSON from '@/assets/lotties/SilverMedalJSON.json';
 import {computed, onMounted, ref} from "vue";
 
 const {points} = defineProps({
@@ -16,8 +19,11 @@ onMounted(async () => {
 })
 
 const animationName = computed(() => {
-  if (points === 1000) return TrophyJSON
-  else return DoneJSON
+  if (points >= 0 && points <= 200) return MarkJSON
+  else if (points > 200 && points <= 500) return LikeJSON
+  else if (points > 500 && points <= 750) return DoneJSON
+  else if (points > 750 && points <= 950) return SilverMedalJSON
+  else if (points > 950 && points <= 1000) return TrophyJSON
 })
 
 const computedGreetings = computed(() => {
