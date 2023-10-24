@@ -17,7 +17,7 @@ onMounted(async () => {
 
 const animationName = computed(() => {
   if (points === 1000) return TrophyJSON
-  else return TrophyJSON
+  else return DoneJSON
 })
 
 const computedGreetings = computed(() => {
