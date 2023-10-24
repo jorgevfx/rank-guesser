@@ -7,10 +7,10 @@ import {
   areClipsCached,
   cacheClips,
   getCachedClips,
-  getClips,
-  getFirstNotSeenClip, getTotalSeenClips,
+  getFirstNotSeenClip, getTotalPoints, getTotalSeenClips, resetGuesses,
   setClipAsSeen, updateCachedClips
-} from "@/services/clipService"
+} from "@/services/clipLogic"
+import {getClips} from "@/services/clipService";
 import ClipProgress from "@/components/ClipProgress.vue";
 import ResultsModal from "@/components/ResultsModal.vue";
 import FinalResults from "@/components/FinalResults.vue";
@@ -72,10 +72,10 @@ const showResults = (subRank) => {
   handleSelectedRank("", selectedButton.value)
 };
 
-const closeModal = (isSuccess) => {
+const closeModal = (isSuccess, points) => {
   showModal.value = false;
   if(isSuccess) {
-    nextClip();
+    nextClip(points);
   }
   window.scrollTo({
     top: 0,
@@ -83,15 +83,25 @@ const closeModal = (isSuccess) => {
   });
 };
 
-const nextClip = () => {
+const nextClip = (points) => {
   seenClips.value++;
   if(seenClips.value<=5){
+    updatePoints(points);
     const updatedClips = setClipAsSeen(clips.value, actualClip.value["id"]);
     clips.value = updatedClips;
     updateCachedClips(updatedClips);
     actualClip.value = getFirstNotSeenClip(updatedClips);
   }
 };
+
+const updatePoints = (points) => {
+  clips.value = clips.value.map(clip => {
+    if(clip["id"]===actualClip.value["id"]){
+      clip["points"] = points;
+    }
+    return clip;
+  })
+}
 
 const getSubRanks = computed(() => {
   for (const key in VALORANT_RANKS) {
@@ -121,7 +131,7 @@ const handleSelectedRank = (rank, buttonRef) => {
         @close-modal="closeModal"
     />
   </teleport>
-  <ClipProgress :seen-clips="seenClips"/>
+  <ClipProgress :seen-clips="seenClips" v-if="seenClips<5"/>
   <div class="wrapper" v-if="seenClips<5">
     <div style="max-width: 1280px" class="video__container">
       <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
@@ -147,7 +157,7 @@ const handleSelectedRank = (rank, buttonRef) => {
       </li>
     </TransitionGroup>
   </div>
-  <FinalResults v-else/>
+  <FinalResults v-else :points="getTotalPoints(clips)"/>
 </template>
 
 <style>
