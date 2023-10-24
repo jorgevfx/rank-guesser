@@ -65,7 +65,7 @@ const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
   gap: 2%;
   width: 100%;
   height: 100%;
-  max-height: 82vh;
+  max-height: 80dvh;
 }
 
 .left, .right {
