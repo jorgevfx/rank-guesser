@@ -3,7 +3,8 @@ import ValorantLogo from "@/components/icons/ValorantLogo.vue";
 import {reactive} from "vue";
 import {gsap} from "gsap";
 import {useMutation} from "@tanstack/vue-query";
-import {guessClip, resetCachedClips} from "@/services/clipService";
+import {guessClip} from "@/services/clipService";
+import {resetCachedClips} from "@/services/clipLogic";
 import {toast} from "vue-sonner";
 import Spinner from "@/components/icons/Spinner.vue";
 
@@ -63,9 +64,9 @@ const afterModalEnter = () => {
 const handleModalClose = () => {
   results.guessedRank = "";
   results.actualRank = "";
+  emit("closeModal", isSuccess.value, results.points);
   results.points = 0;
   earnPoints.value = 0;
-  emit("closeModal", isSuccess.value);
   reset();
 }
 </script>
